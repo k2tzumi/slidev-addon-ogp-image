@@ -13,8 +13,8 @@ A powerful add-on for Slidev that automatically fetches OGP (Open Graph Protocol
 
 ## Example
 
-[example.md](./example.md)
-![screenshot](example-export/001.png)
+[example.md](./example.md)  
+![screenshot](./example-export/1.png)
 
 ## Installation
 
