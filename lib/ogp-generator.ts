@@ -80,7 +80,7 @@ export async function generateOgImage(
 ): Promise<Buffer> {
   const opts = { ...defaultOptions, ...options }
   
-  // Register font if available (Node.js環境のみ)
+  // Register font if available (Node.js environment only)
   if (fs && fs.existsSync(opts.fontPath)) {
     registerFont(opts.fontPath, { family: opts.fontFamily })
   }
@@ -89,7 +89,7 @@ export async function generateOgImage(
   const canvas = createCanvas(opts.width, opts.height)
   const ctx = canvas.getContext('2d')
   
-  // Load background template image (Node.js環境のみ)
+  // Load background template image (Node.js environment only)
   if (fs && fs.existsSync(opts.templatePath)) {
     try {
       const templateImage = await loadImage(fs.readFileSync(opts.templatePath))
@@ -171,4 +171,3 @@ function wrapText(ctx: any, text: string, maxWidth: number): string[] {
   // Limit to maximum 3 lines
   return lines.slice(0, 3)
 }
-
