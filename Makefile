@@ -36,7 +36,7 @@ upgrade:
 .PHONY: publish
 publish: ## Publish add-on
 publish:
-	npm publish ./
+	npm publish --access public
 
 .PHONY: clean
 clean: ## Delete slide
