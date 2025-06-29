@@ -16,7 +16,6 @@ layout: cover
   :width="800"
   :height="400"
   template="./assets/ogp-template.svg"
-  :generate-image="false"
 />
 
 ---
