@@ -15,6 +15,23 @@ layout: cover
   url="https://sli.dev/"
   :width="800"
   :height="400"
-  template="./custom-template.png"
-  :generate-image="true"
+  template="./assets/ogp-template.svg"
+  :generate-image="false"
 />
+
+---
+
+# Check out these resources
+
+<OgpImage url="https://docs.microsoft.com/en-us/azure/" />
+
+<OgpImage url="https://nodejs.org/" />
+
+---
+
+# Multiple Links
+
+<div class="grid grid-cols-2 gap-4">
+  <OgpImage url="https://vuejs.org/" />
+  <OgpImage url="https://react.dev/" />
+</div>
