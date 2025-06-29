@@ -1,5 +1,8 @@
 import { createCanvas, registerFont, loadImage } from 'canvas'
-import * as fs from 'fs'
+let fs: typeof import('fs') | undefined
+if (typeof process !== 'undefined' && process.versions?.node) {
+  fs = require('fs')
+}
 
 export interface OgpData {
   title: string
@@ -77,8 +80,8 @@ export async function generateOgImage(
 ): Promise<Buffer> {
   const opts = { ...defaultOptions, ...options }
   
-  // Register font if available
-  if (fs.existsSync(opts.fontPath)) {
+  // Register font if available (Node.js環境のみ)
+  if (fs && fs.existsSync(opts.fontPath)) {
     registerFont(opts.fontPath, { family: opts.fontFamily })
   }
   
@@ -86,8 +89,8 @@ export async function generateOgImage(
   const canvas = createCanvas(opts.width, opts.height)
   const ctx = canvas.getContext('2d')
   
-  // Load background template image (supports PNG, JPG, SVG)
-  if (fs.existsSync(opts.templatePath)) {
+  // Load background template image (Node.js環境のみ)
+  if (fs && fs.existsSync(opts.templatePath)) {
     try {
       const templateImage = await loadImage(fs.readFileSync(opts.templatePath))
       ctx.drawImage(templateImage, 0, 0, opts.width, opts.height)
