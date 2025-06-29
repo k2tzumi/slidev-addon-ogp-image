@@ -1,3 +1,6 @@
 # Changelog
 
+## [v0.0.2](https://github.com/k2tzumi/slidev-addon-ogp-image/compare/v0.0.1...v0.0.2) - 2025-06-29
+- Refactor OGP image generation and update documentation by @k2tzumi in https://github.com/k2tzumi/slidev-addon-ogp-image/pull/2
+
 ## [v0.0.1](https://github.com/k2tzumi/slidev-addon-ogp-image/commits/v0.0.1) - 2025-06-29

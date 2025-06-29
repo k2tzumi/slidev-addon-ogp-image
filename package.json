@@ -1,6 +1,6 @@
 {
   "name": "@katzumi/slidev-addon-ogp-image",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Slidev add-on for embedding OGP images in slides",
   "engines": {
     "node": ">=18.0.0",
