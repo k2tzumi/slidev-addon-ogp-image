@@ -15,7 +15,6 @@ layout: cover
   url="https://sli.dev/"
   :width="800"
   :height="400"
-  template="./assets/ogp-template.svg"
 />
 
 ---
