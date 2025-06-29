@@ -24,11 +24,11 @@ export interface OgpImageOptions {
 const defaultOptions: Required<OgpImageOptions> = {
   width: 1200,
   height: 630,
-  templatePath: './assets/ogp-template.png',
-  fontPath: './assets/NotoSansJP-Bold.ttf',
+  templatePath: './assets/ogp-template.svg',
+  fontPath: './assets/NotoSansJP-Bold.otf',
   fontSize: 48,
   fontFamily: 'NotoSansJP',
-  textColor: '#000000',
+  textColor: '#FFFFFF',
   maxWidth: 800
 }
 
@@ -41,8 +41,8 @@ export async function fetchOgpData(url: string): Promise<OgpData> {
     const html = await response.text()
     
     const ogpData: OgpData = {
-        url,
-        title: ''
+      url,
+      title: ''
     }
     
     // Extract OGP meta tags
@@ -87,24 +87,30 @@ export async function generateOgImage(
   const canvas = createCanvas(opts.width, opts.height)
   const ctx = canvas.getContext('2d')
   
-  // Load background template image (if exists)
+  // Load background template image (supports PNG, JPG, SVG)
   if (fs.existsSync(opts.templatePath)) {
-    const templateImage = await loadImage(fs.readFileSync(opts.templatePath))
-    ctx.drawImage(templateImage, 0, 0, opts.width, opts.height)
+    try {
+      const templateImage = await loadImage(fs.readFileSync(opts.templatePath))
+      ctx.drawImage(templateImage, 0, 0, opts.width, opts.height)
+    } catch (error) {
+      console.warn('Failed to load template image, using default background:', error)
+      createDefaultBackground(ctx, opts.width, opts.height)
+    }
   } else {
-    // Default gradient background
-    const gradient = ctx.createLinearGradient(0, 0, opts.width, opts.height)
-    gradient.addColorStop(0, '#667eea')
-    gradient.addColorStop(1, '#764ba2')
-    ctx.fillStyle = gradient
-    ctx.fillRect(0, 0, opts.width, opts.height)
+    createDefaultBackground(ctx, opts.width, opts.height)
   }
   
-  // Set text style
+  // Set text style with shadow for better visibility
   ctx.fillStyle = opts.textColor
   ctx.font = `${opts.fontSize}px "${opts.fontFamily}"`
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
+  
+  // Add text shadow for better readability
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.3)'
+  ctx.shadowOffsetX = 2
+  ctx.shadowOffsetY = 2
+  ctx.shadowBlur = 4
   
   // Draw title with automatic line wrapping
   const lines = wrapText(ctx, ogpData.title, opts.maxWidth)
@@ -125,6 +131,18 @@ export async function generateOgImage(
   }
   
   return canvas.toBuffer('image/png')
+}
+
+/**
+ * Create default gradient background
+ */
+function createDefaultBackground(ctx: any, width: number, height: number) {
+  const gradient = ctx.createLinearGradient(0, 0, width, height)
+  gradient.addColorStop(0, '#667eea')
+  gradient.addColorStop(0.5, '#764ba2') 
+  gradient.addColorStop(1, '#f093fb')
+  ctx.fillStyle = gradient
+  ctx.fillRect(0, 0, width, height)
 }
 
 /**
@@ -151,3 +169,4 @@ function wrapText(ctx: any, text: string, maxWidth: number): string[] {
   // Limit to maximum 3 lines
   return lines.slice(0, 3)
 }
+

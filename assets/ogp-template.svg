@@ -1,0 +1,53 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="overlayGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.1);stop-opacity:1" />
+      <stop offset="50%" style="stop-color:rgba(255,255,255,0.05);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0.1);stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(0,0,0,0.1)"/>
+    </filter>
+    
+    <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="20" cy="20" r="1.5" fill="rgba(255,255,255,0.1)"/>
+    </pattern>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Dot pattern overlay -->
+  <rect width="1200" height="630" fill="url(#dots)"/>
+  
+  <!-- Overlay gradient -->
+  <rect width="1200" height="630" fill="url(#overlayGradient)"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="100" cy="100" r="60" fill="rgba(255,255,255,0.1)" filter="url(#shadow)"/>
+  <circle cx="1100" cy="530" r="40" fill="rgba(255,255,255,0.08)"/>
+  <rect x="50" y="550" width="120" height="4" rx="2" fill="rgba(255,255,255,0.2)"/>
+  <rect x="1000" y="80" width="80" height="4" rx="2" fill="rgba(255,255,255,0.2)"/>
+  
+  <!-- Content area (where text will be placed) -->
+  <rect x="100" y="180" width="1000" height="270" fill="rgba(255,255,255,0.05)" rx="12" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  
+  <!-- Title placeholder area -->
+  <rect x="150" y="220" width="900" height="60" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="5,5" rx="4"/>
+  <text x="600" y="250" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-family="Arial, sans-serif" font-size="14">Title will be placed here</text>
+  
+  <!-- Description placeholder area -->
+  <rect x="150" y="300" width="900" height="40" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="3,3" rx="4"/>
+  <text x="600" y="320" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-family="Arial, sans-serif" font-size="12">Description area</text>
+  
+  <!-- Brand/Logo area -->
+  <circle cx="150" cy="500" r="20" fill="rgba(255,255,255,0.15)"/>
+  <text x="180" y="507" fill="rgba(255,255,255,0.6)" font-family="Arial, sans-serif" font-size="16" font-weight="bold">Your Brand</text>
+</svg>
