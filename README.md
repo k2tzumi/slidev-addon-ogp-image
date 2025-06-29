@@ -58,7 +58,6 @@ addons:
 - **width**: Display width for generated images (default: 1200)
 - **height**: Display height for generated images (default: 630)
 - **template**: Custom template image path (server-side only)
-- **generateImage**: Whether to generate custom images (default: false, browser compatibility)
 
 ## Project Structure
 
