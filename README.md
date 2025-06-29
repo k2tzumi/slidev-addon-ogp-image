@@ -48,7 +48,7 @@ Use the component in your slides:
 
 - `url` (required): URL to fetch OGP data from
 - `width`: Display width for the card (default: 1200px)
-- `height`: Display height for the card (default: 6300px)
+- `height`: Display height for the card (default: 630px)
 
 ## Project Structure
 
