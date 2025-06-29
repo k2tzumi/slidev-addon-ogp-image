@@ -1,5 +1,4 @@
 import { createCanvas, registerFont, loadImage } from 'canvas'
-import fetch from 'node-fetch'
 import * as fs from 'fs'
 
 export interface OgpData {
