@@ -17,7 +17,7 @@ dist/index.html: node_modules example.md
 example-export.pdf: node_modules example.md
 	npm run export
 
-example-export/001.png: node_modules example.md
+example-export/*.png: node_modules example.md
 	npm run screenshot
 
 node_modules: package.json package-lock.json
@@ -37,6 +37,15 @@ upgrade:
 publish: ## Publish add-on
 publish:
 	npm publish --access public
+
+.PHONY: build
+build: dist/index.html ## Build slide
+
+.PHONY: pdf
+pdf: example-export.pdf ## Export slide to PDF
+
+.PHONY: png
+png: example-export/*.png ## Export slide to PNG
 
 .PHONY: clean
 clean: ## Delete slide

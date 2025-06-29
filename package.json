@@ -11,8 +11,8 @@
   "scripts": {
     "build": "slidev build example.md",
     "dev": "slidev example.md",
-    "export": "slidev export example.md",
-    "screenshot": "slidev export example.md --format png"
+    "export": "slidev export --timeout 180000 --wait-until load --wait 10000 example.md",
+    "screenshot": "slidev export --timeout 180000 --wait-until load --wait 10000 example.md --format png"
   },
   "repository": {
     "type": "git",
@@ -20,8 +20,7 @@
   },
   "dependencies": {
     "@slidev/types": "^51.8.2",
-    "canvas": "^3.1.2",
-    "node-fetch": "^3.3.2"
+    "canvas": "^3.1.2"
   },
   "devDependencies": {
     "typescript": "^5.8.3",

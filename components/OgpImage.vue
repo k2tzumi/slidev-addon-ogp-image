@@ -45,13 +45,11 @@ interface Props {
   width?: number
   height?: number
   template?: string
-  generateImage?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   width: 1200,
-  height: 630,
-  generateImage: false // Set to false by default for browser compatibility
+  height: 630
 })
 
 const ogpData = ref<OgpData | null>(null)
@@ -234,6 +232,7 @@ onMounted(async () => {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
@@ -245,6 +244,7 @@ onMounted(async () => {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 

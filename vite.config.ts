@@ -17,6 +17,12 @@ export default defineConfig({
         }
       }
     }
+  },
+  define: {
+    // Ensure native fetch is used
+    'global.fetch': 'globalThis.fetch'
+  },
+  optimizeDeps: {
+    exclude: ['node-fetch', 'fetch-blob', 'node-domexception']
   }
 })
-
