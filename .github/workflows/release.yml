@@ -1,0 +1,66 @@
+name: Upload Release assets and npm publish.
+on:
+  # dispatch from tagpr.yml workflow
+  workflow_dispatch:
+    inputs:
+      tag:
+        type: string
+        required: false
+        default: 'v.0.0.0'
+        description: 'Specify release tag'
+jobs:
+  npm-publish-job:
+    name: Upload Release assets and npm publish.
+    runs-on: ubuntu-20.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    # Sets permissions of the GITHUB_TOKEN to allow deployment
+    permissions:
+      contents: write # Upload Release assets
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          always-auth: true
+          scope: '@katzumi'
+      - run: npm pack
+      - name: Get assets file name
+        id: get-assets-file-name
+        run: |
+          assets=$(npm pack --json | jq -r '.[0].filename' | sed 's/^$//')
+          echo "packFile=${assets}" >> $GITHUB_OUTPUT
+      - name: Upload Release Asset
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const release = await github.rest.repos.getReleaseByTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag: context.payload.inputs.tag
+            });
+            const packFile = '${{ steps.get-assets-file-name.outputs.packFile }}';
+            const filePath = path.join(path.resolve(process.env.GITHUB_WORKSPACE), packFile);
+            const fileContent = fs.readFileSync(filePath);
+            await github.rest.repos.uploadReleaseAsset({
+              url: release.data.upload_url,
+              headers: {
+                'content-type': 'application/octet-stream',
+                'content-length': fileContent.length,
+              },
+              name: packFile,
+              data: fileContent,
+            });
+
+      - name: npm publish
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          access: 'public'
+

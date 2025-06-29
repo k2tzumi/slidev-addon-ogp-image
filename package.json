@@ -1,0 +1,40 @@
+{
+  "name": "@katzumi/slidev-addon-ogp-image",
+  "version": "0.0.1",
+  "description": "Slidev add-on for embedding OGP images in slides",
+  "engines": {
+    "node": ">=18.0.0",
+    "slidev": ">=0.48.0"
+  },
+  "main": "index.ts",
+  "keywords": ["slidev", "ogp", "addon"],
+  "scripts": {
+    "build": "slidev build example.md",
+    "dev": "slidev example.md",
+    "export": "slidev export example.md",
+    "screenshot": "slidev export example.md --format png"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/k2tzumi/slidev-addon-ogp-image.git"
+  },
+  "dependencies": {
+    "@slidev/types": "^51.8.2",
+    "canvas": "^3.1.2",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "@types/node": "^24.0.7",
+    "@slidev/cli": "^51.8.2",
+    "@slidev/theme-default": "^0.25.0",
+    "playwright-chromium": "^1.53.1"
+  },
+  "slidev": {
+    "colorSchema": "auto"
+  },
+  "bugs": {
+    "url": "https://github.com/k2tzumi/slidev-addon-ogp-image/issues"
+  },
+  "homepage": "https://github.com/k2tzumi/slidev-addon-ogp-image#readme"
+}
