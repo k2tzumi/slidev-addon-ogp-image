@@ -1,15 +1,14 @@
 # Slidev OGP Image Add-on
 
-A powerful add-on for Slidev that automatically fetches OGP (Open Graph Protocol) data from URLs and displays them as interactive cards in your slides.
+A Slidev addon that displays Open Graph Protocol (OGP) data from URLs as interactive cards in your presentations.
 
 ## Features
 
-- **Automatic OGP Data Fetching**: Extracts Open Graph meta tags from any URL
-- **Interactive Cards**: Clean, clickable cards displaying page information
-- **Vue Component Integration**: Easy-to-use Vue component for Slidev
-- **Error Handling**: Graceful fallbacks and error states
-- **Click-to-Open**: Interactive components that open URLs in new tabs
-- **CORS Proxy**: Built-in proxy support for cross-origin requests
+- **OGP Data Display**: Renders Open Graph meta tags as formatted cards
+- **Vue Component Integration**: Provides a reusable Vue component for Slidev
+- **Interactive Cards**: Displays clickable cards with page information
+- **Error Handling**: Graceful fallbacks when OGP data is unavailable
+- **Click-to-Open**: Opens URLs in new tabs when cards are clicked
 
 ## Example
 
@@ -18,15 +17,13 @@ A powerful add-on for Slidev that automatically fetches OGP (Open Graph Protocol
 
 ## Installation
 
-### 1. Install the Add-on
-
 ```bash
 npm i @katzumi/slidev-addon-ogp-image
 ```
 
-### 2. Configure Slidev
+## Usage
 
-Add the add-on to your `slides.md` frontmatter:
+Add the addon to your `slides.md` frontmatter:
 
 ```yaml
 ---
@@ -35,56 +32,42 @@ addons:
 ---
 ```
 
-## Basic Usage
+Use the component in your slides:
 
 ```vue
 <OgpImage url="https://github.com/k2tzumi/slidev-addon-ogp-image" />
-```
 
-## Advanced Configuration
-
-```vue
 <OgpImage 
   url="https://github.com/k2tzumi/slidev-addon-ogp-image"
   :width="800"
   :height="400"
-  :generate-image="false"
 />
 ```
 
 ## Component Properties
 
-- **url** (required): URL to fetch OGP data from
-- **width**: Display width for generated images (default: 1200)
-- **height**: Display height for generated images (default: 630)
-- **template**: Custom template image path (server-side only)
+- `url` (required): URL to fetch OGP data from
+- `width`: Display width for the card (default: 1200px)
+- `height`: Display height for the card (default: 6300px)
 
 ## Project Structure
 
 ```
 slidev-addon-ogp-image/
-├── index.ts              # Main addon entry (FIXED)
+├── index.ts                    # Main addon entry point
 ├── setup/
-│   └── main.ts          # Client setup
+│   └── main.ts                # Client setup
 ├── lib/
-│   └── ogp-generator.ts # OGP fetching and image generation
+│   └── ogp-generator.ts       # OGP fetching and processing logic
 ├── components/
-│   └── OgpImage.vue     # Vue component
+│   └── OgpImage.vue           # Vue component
 └── assets/
-    ├── ogp-template.png # Optional template
-    └── NotoSansJP-Bold.ttf # Optional font
+    └── NotoSansJP-Bold.ttf    # Optional font file
 ```
 
-## Error Fix Details
+## Examples
 
-The main errors were fixed:
-
-1. **Removed Invalid SlidevAddon Import**: The `@slidev/types` package doesn't export `SlidevAddon`
-2. **Simplified index.ts**: Now exports addon name and components directly
-3. **Updated package.json**: Removed invalid `components` configuration
-4. **Local Addon Structure**: Designed to work as a local addon in your project
-
-## Examples in Slides
+### Single Link
 
 ```markdown
 ---
@@ -92,50 +75,78 @@ addons:
   - "@katzumi/slidev-addon-ogp-image"
 ---
 
-# Check out these resources
+# Check out this resource
 
 <OgpImage url="https://docs.microsoft.com/en-us/azure/" />
+```
 
-<OgpImage url="https://nodejs.org/" />
+### Multiple Links
 
+```markdown
 ---
-
 # Multiple Links
 
 <div class="grid grid-cols-2 gap-4">
   <OgpImage url="https://vuejs.org/" />
   <OgpImage url="https://react.dev/" />
 </div>
-
----
 ```
 
-## Browser Limitations
+## Technical Limitations
 
-Due to browser security restrictions:
+### Browser Security Restrictions
 
-- **Image Generation**: Disabled by default (requires Node.js environment)
-- **CORS**: Uses proxy service for cross-origin requests
-- **Canvas API**: Limited to server-side rendering scenarios
+Due to browser same-origin policy restrictions, this addon has the following limitations:
+
+- **CORS Restrictions**: Direct fetching of OGP data from external domains is blocked by browsers
+- **Proxy Dependency**: Requires external CORS proxy services for cross-origin requests
+- **Network Reliability**: Dependent on third-party proxy service availability
+
+### Recommended Usage
+
+- **Development**: Suitable for development and demonstration purposes
+- **Production**: Consider server-side OGP fetching for production environments
+- **Fallbacks**: Always provide fallback content when OGP data is unavailable
+
+## Browser Compatibility
+
+- Modern browsers with ES2015+ support
+- Chrome 60+
+- Firefox 55+
+- Safari 11+
+- Edge 79+
 
 ## Development
 
+### Setup
+
 ```bash
 # Install dependencies
-make install
+npm install
 
 # Build the addon
-make publish
+npm run build
 
 # Watch mode for development
-make dev
+npm run dev
 ```
 
-## Error Resolution
+### Local Development
 
-The original error was caused by incorrect export format in `setup/main.ts`. The fix ensures:
+The addon is designed to work as a local addon in your Slidev project. For development:
 
-- Proper `defineAppSetup` usage
-- Correct default export syntax
-- Safe client-side component registration
-- Browser-compatible OGP fetching
+1. Clone this repository
+2. Install dependencies
+3. Link to your Slidev project for testing
+
+## Contributing
+
+Contributions are welcome! Please ensure all code follows the project's coding standards and includes appropriate tests.
+
+## License
+
+MIT License - see LICENSE file for details.
+
+## Acknowledgments
+
+This addon builds upon the Slidev ecosystem and leverages Vue.js component architecture for seamless integration with presentation workflows.
