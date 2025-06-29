@@ -38,6 +38,9 @@ publish: ## Publish add-on
 publish:
 	npm publish --access public
 
+.PHONY: build
+build: dist/index.html ## Build slide
+
 .PHONY: pdf
 pdf: example-export.pdf ## Export slide to PDF
 
