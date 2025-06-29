@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.0.5](https://github.com/k2tzumi/slidev-addon-ogp-image/compare/v0.0.4...v0.0.5) - 2025-06-29
+- Refactor documentation for clarity and consistency by @k2tzumi in https://github.com/k2tzumi/slidev-addon-ogp-image/pull/9
+
 ## [v0.0.4](https://github.com/k2tzumi/slidev-addon-ogp-image/compare/v0.0.3...v0.0.4) - 2025-06-29
 - Refactor file system usage and update build configuration by @k2tzumi in https://github.com/k2tzumi/slidev-addon-ogp-image/pull/7
 
