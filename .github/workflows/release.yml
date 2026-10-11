@@ -33,7 +33,7 @@ jobs:
 
       - name: Install npm CLI with staged publishing support
         run: |
-          npm install --global npm@latest
+          npm install --global npm@12
           node --version
           npm --version
 
@@ -67,8 +67,13 @@ jobs:
 
       - name: Get assets file name
         id: get-assets-file-name
+        shell: bash
         run: |
-          assets=$(npm pack --json | jq -r '.[0].filename' | sed 's/^$//')
+          assets="$(npm pack --json | jq -r 'if type == "array" then .[0].filename else to_entries[0].value.filename end')"
+          if [ -z "${assets}" ] || [ ! -f "${assets}" ]; then
+            echo "::error::npm pack did not produce a tarball (got: '${assets}')"
+            exit 1
+          fi
           echo "packFile=${assets}" >> "$GITHUB_OUTPUT"
 
       - name: Upload Release Asset
