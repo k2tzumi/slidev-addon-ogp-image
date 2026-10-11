@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.10](https://github.com/k2tzumi/slidev-addon-ogp-image/compare/v0.0.9...v0.0.10) - 2026-10-11
+
+- refactor: simplify asset upload process in release workflow by @k2tzumi in https://github.com/k2tzumi/slidev-addon-ogp-image/pull/32
+
 ## [v0.0.9](https://github.com/k2tzumi/slidev-addon-ogp-image/compare/v0.0.8...v0.0.9) - 2026-10-11
 
 - fix: specify npm version and improve asset file validation in release workflow by @k2tzumi in https://github.com/k2tzumi/slidev-addon-ogp-image/pull/30
