@@ -88,6 +88,7 @@ interface Props {
   maxHeight?: string
   showFavicon?: boolean
   faviconSize?: number
+  timeoutMs?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -96,7 +97,8 @@ const props = withDefaults(defineProps<Props>(), {
   maxWidth: '100%',
   maxHeight: '300px',
   showFavicon: true,
-  faviconSize: 16
+  faviconSize: 16,
+  timeoutMs: 15000
 })
 
 const ogpData = ref<OgpData | null>(null)
@@ -132,21 +134,57 @@ onMounted(async () => {
     }
     console.log('OGP data received:', ogpData.value)
   } catch (err) {
-    console.error('Error fetching OGP data:', err)
-    error.value = err instanceof Error ? err.message : 'Unknown error occurred'
+    console.warn('Unable to fetch OGP data; rendering fallback card:', err)
+    error.value = null
+    const domain = getDomain(props.url)
     ogpData.value = {
       url: props.url,
-      title: 'Failed to load',
-      description: 'Unable to fetch page data'
+      title: domain || 'Link preview unavailable',
+      description: 'Preview unavailable. Open the link to view the page.',
+      siteName: domain || undefined
     }
+    if (props.showFavicon) setFaviconUrl()
   } finally {
     isLoading.value = false
   }
 })
 
+const containerStyles = computed(() => ({
+  width: `${props.width}px`,
+  maxWidth: props.maxWidth,
+  maxHeight: props.maxHeight
+}))
+const requestTimeoutMs = computed(() => {
+  const value = Number.isFinite(props.timeoutMs) ? Math.floor(props.timeoutMs) : 15000
+  return Math.min(Math.max(value, 1), 60000)
+})
+
+function getDomain(url: string): string {
+  try {
+    return new URL(url).hostname
+  } catch {
+    return ''
+  }
+}
+
+function openUrl(): void {
+  window.open(props.url, '_blank', 'noopener,noreferrer')
+}
+
+function handleImageError(): void {
+  imageError.value = true
+}
+
+function handleImageLoad(): void {
+  imageLoaded.value = true
+}
+
 // Enhanced OGP data fetcher with improved error handling and multiple proxy support
 async function fetchOgpData(url: string): Promise<OgpData> {
+  const deadline = Date.now() + requestTimeoutMs.value
   const proxies = [
+    // Available only while Slidev's Vite development server is running
+    `/__slidev_ogp?url=${encodeURIComponent(url)}&timeoutMs=${encodeURIComponent(String(requestTimeoutMs.value))}`,
     // Primary proxy with better reliability
     `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
     // Alternative proxy for fallback
@@ -157,18 +195,27 @@ async function fetchOgpData(url: string): Promise<OgpData> {
   
   for (const proxyUrl of proxies) {
     try {
+      const remainingMs = Math.ceil(deadline - Date.now())
+      if (remainingMs <= 0) break
+
       console.log(`Attempting to fetch OGP data from: ${url} via ${proxyUrl}`)
       const response = await fetch(proxyUrl, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (compatible; OGP-Bot/1.0; +https://ogp.me/)',
           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
         },
-        // Add timeout to prevent hanging requests
-        signal: AbortSignal.timeout(10000)
+        // Share one timeout budget across local and public proxy attempts
+        signal: AbortSignal.timeout(remainingMs)
       })
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+
+      // Static hosts may return the SPA index.html for unknown paths with 200.
+      // Only treat this as an OGP response when the dev middleware identifies it.
+      if (proxyUrl.startsWith('/__slidev_ogp') && response.headers.get('x-slidev-ogp-proxy') !== '1') {
+        throw new Error('Local OGP proxy is not available')
       }
       
       let html: string
