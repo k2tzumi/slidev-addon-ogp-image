@@ -2,7 +2,7 @@
   <!-- Fixed container with proper responsive design and image overflow prevention -->
   <div 
     class="ogp-image-container" 
-    :class="{ 'loading': isLoading, 'has-error': error }"
+    :class="{ 'loading': isLoading, 'has-error': error, 'is-print': isPrintMode }"
     :style="containerStyles"
   >
     <!-- Loading state with improved spinner -->
@@ -70,6 +70,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { useNav } from '@slidev/client'
 
 interface OgpData {
   title: string
@@ -107,6 +108,8 @@ const error = ref<string | null>(null)
 const imageError = ref(false)
 const imageLoaded = ref(false)
 const faviconUrl = ref<string | null>(null)
+// True while Slidev is exporting (PDF/PNG/PPTX) or showing its export page
+const { isPrintMode } = useNav()
 
 // Get favicon with Google S2 Favicon API
 const setFaviconUrl = () => {
@@ -327,6 +330,18 @@ async function fetchOgpData(url: string): Promise<OgpData> {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   border-color: #1976d2;
+}
+
+/* Export: Chromium writes a blurred shadow into the PDF as a soft-masked rectangle,
+   which some viewers (e.g. macOS Preview) paint as a solid gray box. Drop it there. */
+.ogp-image-container.is-print {
+  box-shadow: none;
+}
+
+@media print {
+  .ogp-image-container {
+    box-shadow: none;
+  }
 }
 
 /* Enhanced loading state with animated spinner */
