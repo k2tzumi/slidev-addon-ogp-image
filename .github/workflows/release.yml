@@ -37,16 +37,6 @@ jobs:
           node --version
           npm --version
 
-      - name: Check npm authentication
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "::error::NPM_TOKEN is not configured."
-            exit 1
-          fi
-          npm whoami --registry=https://registry.npmjs.org/
-
       - name: Validate package metadata
         run: |
           node -e '
