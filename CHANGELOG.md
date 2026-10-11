@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.7](https://github.com/k2tzumi/slidev-addon-ogp-image/compare/v0.0.6...v0.0.7) - 2026-10-11
+
+- feat: require release tag input and enhance npm publish workflow by @k2tzumi in https://github.com/k2tzumi/slidev-addon-ogp-image/pull/26
+
 ## [v0.0.6](https://github.com/k2tzumi/slidev-addon-ogp-image/compare/v0.0.5...v0.0.6) - 2026-10-11
 
 - Add favicon support with customizable size in OGP component by @k2tzumi in https://github.com/k2tzumi/slidev-addon-ogp-image/pull/12
