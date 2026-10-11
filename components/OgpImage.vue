@@ -150,6 +150,8 @@ onMounted(async () => {
 })
 
 const containerStyles = computed(() => ({
+  // 固定 px 幅は親の grid/flex トラックを押し広げるため、% を含む式にして
+  // 「最大 props.width、ただし親の幅まで」に留める
   width: `min(${props.width}px, 100%)`,
   maxWidth: props.maxWidth,
   maxHeight: props.maxHeight
@@ -629,55 +631,54 @@ async function fetchOgpData(url: string): Promise<OgpData> {
   }
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .ogp-image-container {
-    background: #1f2937;
-    border-color: #374151;
-    color: #e5e7eb;
-  }
-  
-  .ogp-title {
-    color: #f9fafb;
-  }
-  
-  .ogp-description {
-    color: #d1d5db;
-  }
-  
-  .ogp-site-name {
-    color: #9ca3af;
-  }
-  
-  .loading-spinner {
-    background: #111827;
-    color: #d1d5db;
-  }
-  
-  .spinner-icon {
-    border-color: #374151;
-    border-top-color: #3b82f6;
-  }
-  
-  .error-message {
-    background: #1f1917;
-  }
-  
-  .ogp-fallback {
-    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-  }
-  
-  .fallback-title {
-    color: #f9fafb;
-  }
-  
-  .fallback-description {
-    color: #d1d5db;
-  }
-  
-  .fallback-site-name {
-    color: #9ca3af;
-  }
+/* Dark mode support: follow Slidev's color schema (html.dark), not the OS setting.
+   :where() keeps specificity unchanged so the :hover rule above still wins. */
+:where(.dark) .ogp-image-container {
+  background: #1f2937;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+:where(.dark) .ogp-title {
+  color: #f9fafb;
+}
+
+:where(.dark) .ogp-description {
+  color: #d1d5db;
+}
+
+:where(.dark) .ogp-site-name {
+  color: #9ca3af;
+}
+
+:where(.dark) .loading-spinner {
+  background: #111827;
+  color: #d1d5db;
+}
+
+:where(.dark) .spinner-icon {
+  border-color: #374151;
+  border-top-color: #3b82f6;
+}
+
+:where(.dark) .error-message {
+  background: #1f1917;
+}
+
+:where(.dark) .ogp-fallback {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
+
+:where(.dark) .fallback-title {
+  color: #f9fafb;
+}
+
+:where(.dark) .fallback-description {
+  color: #d1d5db;
+}
+
+:where(.dark) .fallback-site-name {
+  color: #9ca3af;
 }
 
 /* High contrast mode support for accessibility */
