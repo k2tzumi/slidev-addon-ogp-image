@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.12](https://github.com/k2tzumi/slidev-addon-ogp-image/compare/v0.0.11...v0.0.12) - 2026-10-11
+
+- Fix width by @k2tzumi in https://github.com/k2tzumi/slidev-addon-ogp-image/pull/35
+
 ## [v0.0.11](https://github.com/k2tzumi/slidev-addon-ogp-image/compare/v0.0.10...v0.0.11) - 2026-10-11
 
 - feat: add timeout configuration and local proxy for OGP data fetching by @k2tzumi in https://github.com/k2tzumi/slidev-addon-ogp-image/pull/25
