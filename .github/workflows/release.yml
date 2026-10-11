@@ -75,32 +75,12 @@ jobs:
             exit 1
           fi
           echo "packFile=${assets}" >> "$GITHUB_OUTPUT"
-
       - name: Upload Release Asset
-        uses: actions/github-script@v9
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const path = require('path');
-            const release = await github.rest.repos.getReleaseByTag({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag: context.payload.inputs.tag
-            });
-            const packFile = '${{ steps.get-assets-file-name.outputs.packFile }}';
-            const filePath = path.join(path.resolve(process.env.GITHUB_WORKSPACE), packFile);
-            const fileContent = fs.readFileSync(filePath);
-            await github.rest.repos.uploadReleaseAsset({
-              url: release.data.upload_url,
-              headers: {
-                'content-type': 'application/octet-stream',
-                'content-length': fileContent.length,
-              },
-              name: packFile,
-              data: fileContent,
-            });
-
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          PACK_FILE: ${{ steps.get-assets-file-name.outputs.packFile }}
+        run: gh release upload "${TAG}" "${PACK_FILE}" --clobber
       - name: Stage npm package for approval
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
