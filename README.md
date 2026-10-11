@@ -41,6 +41,7 @@ Use the component in your slides:
   url="https://github.com/k2tzumi/slidev-addon-ogp-image"
   :width="800"
   :height="400"
+  :timeout-ms="20000"
 />
 ```
 
@@ -49,6 +50,15 @@ Use the component in your slides:
 - `url` (required): URL to fetch OGP data from
 - `width`: Display width for the card (default: 1200px)
 - `height`: Display height for the card (default: 630px)
+- `timeoutMs`: Maximum total time in milliseconds for all OGP fetch attempts (default: 15000; clamped to 1–60000)
+
+### Fetch behavior
+
+- During local Slidev development, the addon first fetches page HTML through a same-origin endpoint provided by the Vite dev server. This avoids browser CORS restrictions for the initial request.
+- If the local endpoint is unavailable or the request fails, the component tries the existing public CORS proxies.
+- The local endpoint is available only while the development server is running. Static HTML exports and deployed static sites do not include it; those environments use the public-proxy fallback.
+- If all fetch attempts fail, the component renders a usable card with the target domain instead of replacing the card with an error screen.
+- The local proxy accepts only HTTP(S) URLs resolving to public IP addresses, follows and revalidates redirects, and limits HTML responses to 2 MB. These checks reduce SSRF risk but cannot guarantee that every remote host is reachable or safe.
 
 ## Project Structure
 
@@ -59,6 +69,8 @@ slidev-addon-ogp-image/
 │   └── main.ts                # Client setup
 ├── lib/
 │   └── ogp-generator.ts       # OGP fetching and processing logic
+├── server/
+│   └── ogp-proxy.ts           # Development-server-only HTML proxy
 ├── components/
 │   └── OgpImage.vue           # Vue component
 └── assets/
@@ -96,11 +108,7 @@ addons:
 
 ### Browser Security Restrictions
 
-Due to browser same-origin policy restrictions, this addon has the following limitations:
-
-- **CORS Restrictions**: Direct fetching of OGP data from external domains is blocked by browsers
-- **Proxy Dependency**: Requires external CORS proxy services for cross-origin requests
-- **Network Reliability**: Dependent on third-party proxy service availability
+During local development, remote HTML is fetched by the local Vite server to avoid browser CORS restrictions. Static exports and deployed static hosting have no server-side endpoint, so fetching depends on the public CORS proxy fallback and its availability. The timeout applies to the complete sequence of local and public proxy attempts.
 
 ### Recommended Usage
 

@@ -15,6 +15,7 @@ layout: cover
   url="https://sli.dev/"
   :width="800"
   :height="400"
+  :timeout-ms="20000"
 />
 
 ---
