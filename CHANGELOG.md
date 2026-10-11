@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.11](https://github.com/k2tzumi/slidev-addon-ogp-image/compare/v0.0.10...v0.0.11) - 2026-10-11
+
+- feat: add timeout configuration and local proxy for OGP data fetching by @k2tzumi in https://github.com/k2tzumi/slidev-addon-ogp-image/pull/25
+
 ## [v0.0.10](https://github.com/k2tzumi/slidev-addon-ogp-image/compare/v0.0.9...v0.0.10) - 2026-10-11
 
 - refactor: simplify asset upload process in release workflow by @k2tzumi in https://github.com/k2tzumi/slidev-addon-ogp-image/pull/32
