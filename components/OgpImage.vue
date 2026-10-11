@@ -2,7 +2,7 @@
   <!-- Fixed container with proper responsive design and image overflow prevention -->
   <div 
     class="ogp-image-container" 
-    :class="{ 'loading': isLoading, 'has-error': error }"
+    :class="{ 'loading': isLoading, 'has-error': error, 'is-print': isPrintMode }"
     :style="containerStyles"
   >
     <!-- Loading state with improved spinner -->
@@ -70,6 +70,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { useNav } from '@slidev/client'
 
 interface OgpData {
   title: string
@@ -107,6 +108,8 @@ const error = ref<string | null>(null)
 const imageError = ref(false)
 const imageLoaded = ref(false)
 const faviconUrl = ref<string | null>(null)
+// True while Slidev is exporting (PDF/PNG/PPTX) or showing its export page
+const { isPrintMode } = useNav()
 
 // Get favicon with Google S2 Favicon API
 const setFaviconUrl = () => {
@@ -150,7 +153,9 @@ onMounted(async () => {
 })
 
 const containerStyles = computed(() => ({
-  width: `${props.width}px`,
+  // 固定 px 幅は親の grid/flex トラックを押し広げるため、% を含む式にして
+  // 「最大 props.width、ただし親の幅まで」に留める
+  width: `min(${props.width}px, 100%)`,
   maxWidth: props.maxWidth,
   maxHeight: props.maxHeight
 }))
@@ -325,6 +330,18 @@ async function fetchOgpData(url: string): Promise<OgpData> {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   border-color: #1976d2;
+}
+
+/* Export: Chromium writes a blurred shadow into the PDF as a soft-masked rectangle,
+   which some viewers (e.g. macOS Preview) paint as a solid gray box. Drop it there. */
+.ogp-image-container.is-print {
+  box-shadow: none;
+}
+
+@media print {
+  .ogp-image-container {
+    box-shadow: none;
+  }
 }
 
 /* Enhanced loading state with animated spinner */
@@ -629,55 +646,54 @@ async function fetchOgpData(url: string): Promise<OgpData> {
   }
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .ogp-image-container {
-    background: #1f2937;
-    border-color: #374151;
-    color: #e5e7eb;
-  }
-  
-  .ogp-title {
-    color: #f9fafb;
-  }
-  
-  .ogp-description {
-    color: #d1d5db;
-  }
-  
-  .ogp-site-name {
-    color: #9ca3af;
-  }
-  
-  .loading-spinner {
-    background: #111827;
-    color: #d1d5db;
-  }
-  
-  .spinner-icon {
-    border-color: #374151;
-    border-top-color: #3b82f6;
-  }
-  
-  .error-message {
-    background: #1f1917;
-  }
-  
-  .ogp-fallback {
-    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-  }
-  
-  .fallback-title {
-    color: #f9fafb;
-  }
-  
-  .fallback-description {
-    color: #d1d5db;
-  }
-  
-  .fallback-site-name {
-    color: #9ca3af;
-  }
+/* Dark mode support: follow Slidev's color schema (html.dark), not the OS setting.
+   :where() keeps specificity unchanged so the :hover rule above still wins. */
+:where(.dark) .ogp-image-container {
+  background: #1f2937;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+:where(.dark) .ogp-title {
+  color: #f9fafb;
+}
+
+:where(.dark) .ogp-description {
+  color: #d1d5db;
+}
+
+:where(.dark) .ogp-site-name {
+  color: #9ca3af;
+}
+
+:where(.dark) .loading-spinner {
+  background: #111827;
+  color: #d1d5db;
+}
+
+:where(.dark) .spinner-icon {
+  border-color: #374151;
+  border-top-color: #3b82f6;
+}
+
+:where(.dark) .error-message {
+  background: #1f1917;
+}
+
+:where(.dark) .ogp-fallback {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
+
+:where(.dark) .fallback-title {
+  color: #f9fafb;
+}
+
+:where(.dark) .fallback-description {
+  color: #d1d5db;
+}
+
+:where(.dark) .fallback-site-name {
+  color: #9ca3af;
 }
 
 /* High contrast mode support for accessibility */
