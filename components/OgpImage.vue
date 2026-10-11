@@ -150,7 +150,7 @@ onMounted(async () => {
 })
 
 const containerStyles = computed(() => ({
-  width: `${props.width}px`,
+  width: `min(${props.width}px, 100%)`,
   maxWidth: props.maxWidth,
   maxHeight: props.maxHeight
 }))
