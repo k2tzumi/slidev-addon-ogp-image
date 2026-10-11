@@ -1,13 +1,14 @@
 name: Upload Release assets and npm publish.
+
 on:
   # dispatch from tagpr.yml workflow
   workflow_dispatch:
     inputs:
       tag:
         type: string
-        required: false
-        default: 'v.0.0.0'
+        required: true
         description: 'Specify release tag'
+
 jobs:
   npm-publish-job:
     name: Upload Release assets and npm publish.
@@ -15,24 +16,71 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
-    # Sets permissions of the GITHUB_TOKEN to allow deployment
+
     permissions:
       contents: write # Upload Release assets
-      id-token: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
         with:
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-          always-auth: true
           scope: '@katzumi'
-      - run: npm pack
+
+      - name: Install npm CLI with staged publishing support
+        run: |
+          npm install --global npm@latest
+          node --version
+          npm --version
+
+      - name: Check npm authentication
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "::error::NPM_TOKEN is not configured."
+            exit 1
+          fi
+          npm whoami --registry=https://registry.npmjs.org/
+
+      - name: Validate package metadata
+        run: |
+          node -e '
+            const pkg = require("./package.json");
+            if (!pkg.name) {
+              console.error("package.json is missing name");
+              process.exit(1);
+            }
+            if (!pkg.version) {
+              console.error("package.json is missing version");
+              process.exit(1);
+            }
+            console.log(`Package: ${pkg.name}`);
+            console.log(`Version: ${pkg.version}`);
+          '
+
+      - name: Check tag and package version consistency
+        shell: bash
+        run: |
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          EXPECTED_TAG="v${PKG_VERSION}"
+          if [ "${{ inputs.tag }}" != "${EXPECTED_TAG}" ]; then
+            echo "::error::Tag input does not match package.json version"
+            echo "input tag   : ${{ inputs.tag }}"
+            echo "expected tag: ${EXPECTED_TAG}"
+            exit 1
+          fi
+
       - name: Get assets file name
         id: get-assets-file-name
         run: |
           assets=$(npm pack --json | jq -r '.[0].filename' | sed 's/^$//')
-          echo "packFile=${assets}" >> $GITHUB_OUTPUT
+          echo "packFile=${assets}" >> "$GITHUB_OUTPUT"
+
       - name: Upload Release Asset
         uses: actions/github-script@v9
         with:
@@ -58,9 +106,20 @@ jobs:
               data: fileContent,
             });
 
-      - name: npm publish
-        uses: JS-DevTools/npm-publish@v4
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          access: 'public'
+      - name: Stage npm package for approval
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PACK_FILE: ${{ steps.get-assets-file-name.outputs.packFile }}
+        run: |
+          npm stage publish "./${PACK_FILE}" \
+            --access public \
+            --registry=https://registry.npmjs.org/
 
+      - name: Write approval instructions
+        run: |
+          {
+            echo "## npm staged publishing"
+            echo "The package was staged, but is not publicly available yet."
+            echo "Review and approve it on npmjs.com using 2FA."
+            echo "GitHub Release asset upload is complete."
+          } >> "$GITHUB_STEP_SUMMARY"
