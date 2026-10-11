@@ -50,7 +50,17 @@
           <h3 class="fallback-title">{{ ogpData?.title || 'Untitled' }}</h3>
           <p v-if="ogpData?.description" class="fallback-description">{{ ogpData.description }}</p>
           <div class="fallback-site-info">
-            <span class="fallback-site-name">{{ ogpData?.siteName || domain }}</span>
+            <span v-if="props.showFavicon && faviconUrl" class="ogp-favicon">
+              <img
+                :src="faviconUrl"
+                :alt="`${ogpData?.siteName || domain} favicon`"
+                :width="props.faviconSize"
+                :height="props.faviconSize"
+                style="vertical-align: middle; margin-right: 4px; border-radius: 3px;"
+                @error="faviconUrl = null"
+              />
+            </span>
+            <span class="ogp-site-name">{{ ogpData?.siteName || domain }}</span>
           </div>
         </div>
       </div>
@@ -76,13 +86,17 @@ interface Props {
   template?: string
   maxWidth?: string
   maxHeight?: string
+  showFavicon?: boolean
+  faviconSize?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   width: 1200,
   height: 630,
   maxWidth: '100%',
-  maxHeight: '300px'
+  maxHeight: '300px',
+  showFavicon: true,
+  faviconSize: 16
 })
 
 const ogpData = ref<OgpData | null>(null)
@@ -90,42 +104,45 @@ const isLoading = ref(true)
 const error = ref<string | null>(null)
 const imageError = ref(false)
 const imageLoaded = ref(false)
+const faviconUrl = ref<string | null>(null)
 
-// Computed property for dynamic domain extraction
-const domain = computed(() => {
+// Get favicon with Google S2 Favicon API
+const setFaviconUrl = () => {
   try {
-    return new URL(props.url).hostname
+    const host = new URL(props.url).hostname
+    faviconUrl.value = `https://www.google.com/s2/favicons?sz=${props.faviconSize}&domain=${host}`
   } catch {
-    return props.url
+    faviconUrl.value = null
+  }
+}
+
+onMounted(async () => {
+  try {
+    console.log('Initializing OGP fetch for:', props.url)
+    isLoading.value = true
+    error.value = null
+    imageError.value = false
+    imageLoaded.value = false
+
+    // OGPデータ取得
+    ogpData.value = await fetchOgpData(props.url)
+    // favicon取得（showFaviconがtrueの場合のみ）
+    if (props.showFavicon) {
+      setFaviconUrl()
+    }
+    console.log('OGP data received:', ogpData.value)
+  } catch (err) {
+    console.error('Error fetching OGP data:', err)
+    error.value = err instanceof Error ? err.message : 'Unknown error occurred'
+    ogpData.value = {
+      url: props.url,
+      title: 'Failed to load',
+      description: 'Unable to fetch page data'
+    }
+  } finally {
+    isLoading.value = false
   }
 })
-
-// Enhanced container styles with better responsive handling
-const containerStyles = computed(() => ({
-  maxWidth: props.maxWidth,
-  maxHeight: props.maxHeight,
-  width: '100%',
-  height: 'auto'
-}))
-
-// Improved URL opening with security considerations
-const openUrl = () => {
-  if (!isLoading.value && !error.value) {
-    window.open(props.url, '_blank', 'noopener,noreferrer')
-  }
-}
-
-// Enhanced image error handling with fallback mechanism
-const handleImageError = () => {
-  console.warn('Failed to load OGP image:', ogpData.value?.image)
-  imageError.value = true
-}
-
-// New image load handler for better UX
-const handleImageLoad = () => {
-  imageLoaded.value = true
-  console.log('OGP image loaded successfully')
-}
 
 // Enhanced OGP data fetcher with improved error handling and multiple proxy support
 async function fetchOgpData(url: string): Promise<OgpData> {
@@ -241,36 +258,6 @@ async function fetchOgpData(url: string): Promise<OgpData> {
   console.error('All proxy attempts failed for:', url)
   throw new Error('Unable to fetch page data due to CORS restrictions or network issues')
 }
-
-// Enhanced initialization with better error handling
-onMounted(async () => {
-  try {
-    console.log('Initializing OGP fetch for:', props.url)
-    
-    // Reset states
-    isLoading.value = true
-    error.value = null
-    imageError.value = false
-    imageLoaded.value = false
-    
-    // Fetch OGP data with timeout
-    ogpData.value = await fetchOgpData(props.url)
-    
-    console.log('OGP data received:', ogpData.value)
-  } catch (err) {
-    console.error('Error fetching OGP data:', err)
-    error.value = err instanceof Error ? err.message : 'Unknown error occurred'
-    
-    // Provide minimal fallback data for better UX
-    ogpData.value = {
-      url: props.url,
-      title: 'Failed to load',
-      description: 'Unable to fetch page data'
-    }
-  } finally {
-    isLoading.value = false
-  }
-})
 </script>
 
 <style scoped>
@@ -678,5 +665,11 @@ onMounted(async () => {
   .ogp-content:hover .ogp-image {
     transform: none;
   }
+}
+
+.ogp-favicon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 2px;
 }
 </style>
